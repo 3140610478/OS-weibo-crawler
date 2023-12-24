@@ -1958,7 +1958,7 @@ class Weibo(object):
                     # 制会自动解除)，加入随机等待模拟人的操作，可降低被系统限制的风险。默
                     # 认是每爬取1到5页随机等待6到10秒，如果仍然被限，可适当增加sleep时间
                     if (page - page1) % random_pages == 0 and page < page_count:
-                        sleep(random.randint(6, 10))
+                        sleep(random.randint(10, 15))
                         page1 = page
                         random_pages = random.randint(1, 5)
 

@@ -1,8 +1,8 @@
 {
-    "user_id_list": "user_id_list.txt",
+    "user_id_list": ["7211561239"],
     "only_crawl_original": 0,
-    "since_date": 1,
-    "start_page": 1,
+    "since_date": 365,
+    "start_page": 61,
     "write_mode": [
         "csv"
     ],
@@ -16,7 +16,7 @@
     "repost_max_download_count": 100,
     "user_id_as_folder_name": 0,
     "remove_html_tag": 1,
-    "cookie": "your cookie",
+    "cookie": "_T_WM=5c1cf552efbc28e0e1995b03583890cf; MLOGIN=1; SCF=AmAalBYbtRzppLX4So6pc0WI4TDZ9x5Sdq4iKSYvifud9oQfqF1lTf2dPg2_mOZE_8-meyCBmmudX707GHt4_0A.; SUB=_2A25IgS-tDeRhGeFG4lAS9C_PwzWIHXVr_y1lrDV6PUNbktANLUfDkW1NeG5wcWdOjTu0IX_i3IHnbgyhSMAQ00Ql; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9Whrq-4-4U-UNLvpNpgdRefu5JpX5KzhUgL.FoMR1Kz0Sh201h.2dJLoIp7LxKML1KBLBKnLxKqL1hnLBoMN1h.Ee0Bpe0n4; SSOLoginState=1703239678; ALF=1705831678; M_WEIBOCN_PARAMS=luicode%3D10000011%26lfid%3D102803",
     "mysql_config": {
         "host": "localhost",
         "port": 3306,

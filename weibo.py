@@ -29,6 +29,8 @@ from util import csvutil
 from util.dateutil import convert_to_days_ago
 from util.notify import push_deer
 
+import threading
+
 warnings.filterwarnings("ignore")
 
 # 如果日志文件夹不存在，则创建
@@ -643,14 +645,23 @@ class Weibo(object):
             file_dir = file_dir + os.sep + describe
             if not os.path.isdir(file_dir):
                 os.makedirs(file_dir)
-            for w in tqdm(self.weibo[wrote_count:], desc="Download progress"):
+            
+            threads = []
+            # for w in tqdm(self.weibo[wrote_count:], desc="Download progress"):  # multithread here
+            for w in self.weibo[wrote_count:]:  # multithread here
                 if weibo_type == "retweet":
                     if w.get("retweet"):
                         w = w["retweet"]
                     else:
                         continue
                 if w.get(key):
-                    self.handle_download(file_type, file_dir, w.get(key), w)
+                    # self.handle_download(file_type, file_dir, w.get(key), w)
+                    t = threading.Thread(target=self.handle_download, args=(file_type, file_dir, w.get(key), w))
+                    t.start()
+                    threads.append(t)
+            for t in threads:
+                t.join()
+                
             logger.info("%s下载完毕,保存路径:", describe)
             logger.info(file_dir)
         except Exception as e:

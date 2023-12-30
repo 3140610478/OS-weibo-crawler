@@ -32,7 +32,7 @@ from util.notify import push_deer
 import threading
 
 warnings.filterwarnings("ignore")
-
+os.chdir(os.path.abspath(os.path.dirname(__file__)))
 # 如果日志文件夹不存在，则创建
 if not os.path.isdir("log/"):
     os.makedirs("log/")
@@ -497,7 +497,7 @@ class Weibo(object):
             video_url_list += live_photo_list
         return ";".join(video_url_list)
 
-    def download_one_file(self, url, file_path, type, weibo_id):
+    def download_one_file(self, url, file_path, file_type, weibo_id):
         """下载单个文件(图片/视频)"""
         try:
 
@@ -545,7 +545,7 @@ class Weibo(object):
             else:
                 logger.debug("[DEBUG] failed " + url + " TOTALLY")
         except Exception as e:
-            error_file = self.get_filepath(type) + os.sep + "not_downloaded.txt"
+            error_file = self.get_filepath(file_type) + os.sep + "not_downloaded.txt"
             with open(error_file, "ab") as f:
                 url = str(weibo_id) + ":" + file_path + ":" + url + "\n"
                 f.write(url.encode(sys.stdout.encoding))
@@ -662,8 +662,37 @@ class Weibo(object):
             for t in threads:
                 t.join()
                 
-            logger.info("%s下载完毕,保存路径:", describe)
+            
+            # handling not downloaded files
+            cnt = 0
+            threads = []
+            error_file = self.get_filepath(file_type) + os.sep + "not_downloaded.txt"
+            if os.path.exists(error_file):
+                for i in range(5):
+                    with open(error_file, "rb") as f:
+                        # in download_one_file: url = str(weibo_id) + ":" + file_path + ":" + url + "\n"
+                        recs = f.read().decode(sys.stdout.encoding).split("\n")[:-1]
+                        if not recs:
+                            break
+                    with open(error_file, "wb") as f:
+                        f.write("".encode(sys.stdout.encoding))
+                    for rec in recs:
+                        weibo_id, file_path_and_url = rec.split(":", 1)
+                        file_path_and_url = file_path_and_url.rsplit("https://", 1)
+                        file_path, url = file_path_and_url[0][:-1], "https://"+file_path_and_url[1]
+                        t = threading.Thread(target=self.download_one_file, args=(url, file_path, file_type, weibo_id))
+                        t.start()
+                        threads.append(t)
+                    for t in threads:
+                        t.join()
+                    
+                with open(error_file, "rb") as f:
+                    # in download_one_file: url = str(weibo_id) + ":" + file_path + ":" + url + "\n"
+                    recs = f.read().decode(sys.stdout.encoding).split("\n")[:-1]
+                    cnt = len(recs)
+            logger.info("%s下载完毕, %d个文件下载失败, 保存路径:", describe, cnt)
             logger.info(file_dir)
+            
         except Exception as e:
             logger.exception(e)
 
